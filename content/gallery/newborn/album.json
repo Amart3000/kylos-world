@@ -1,0 +1,15 @@
+{
+  "slug": "newborn",
+  "title": "Newborn Days",
+  "date": "2025-05-26",
+  "description": "The very first days — hospital, home, and the wide-eyed wonder of it all.",
+  "coverPhoto": "placeholder-cover.svg",
+  "photos": [
+    {
+      "filename": "placeholder-cover.svg",
+      "caption": "Add your first photo here",
+      "width": 800,
+      "height": 600
+    }
+  ]
+}

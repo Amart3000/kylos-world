@@ -1,0 +1,42 @@
+[
+  {
+    "id": "birth",
+    "date": "2025-05-26",
+    "title": "Kylo is Born",
+    "category": "milestone",
+    "note": "The day everything changed. You arrived at 7:42am, took one look at the world, and decided it was worth sticking around.",
+    "icon": "star"
+  },
+  {
+    "id": "first-smile",
+    "date": "2025-07-04",
+    "title": "First Smile",
+    "category": "first",
+    "note": "A real, intentional smile — not gas! You grinned at Dad during a diaper change and melted us completely.",
+    "icon": "smile"
+  },
+  {
+    "id": "first-laugh",
+    "date": "2025-08-12",
+    "title": "First Laugh",
+    "category": "first",
+    "note": "Mom made a silly face and you laughed — a real belly laugh. We played the video on repeat for a week.",
+    "icon": "smile"
+  },
+  {
+    "id": "rolling-over",
+    "date": "2025-09-20",
+    "title": "Rolled Over",
+    "category": "milestone",
+    "note": "Tummy to back, then back to tummy. You looked extremely proud of yourself.",
+    "icon": "star"
+  },
+  {
+    "id": "first-food",
+    "date": "2025-11-01",
+    "title": "First Solid Food",
+    "category": "first",
+    "note": "Sweet potato puree. You made the greatest face — somewhere between delight and disgust — then opened your mouth for more.",
+    "icon": "heart"
+  }
+]
