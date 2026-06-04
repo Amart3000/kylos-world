@@ -3,13 +3,107 @@
   "title": "Newborn Days",
   "date": "2025-05-26",
   "description": "The very first days — hospital, home, and the wide-eyed wonder of it all.",
-  "coverPhoto": "placeholder-cover.svg",
+  "coverPhoto": "1000174612.jpg",
   "photos": [
     {
-      "filename": "placeholder-cover.svg",
-      "caption": "Add your first photo here",
-      "width": 800,
-      "height": 600
+      "filename": "1000174612.jpg",
+      "width": 1152,
+      "height": 2048
+    },
+    {
+      "filename": "71EFE44E-FE05-4125-B726-1013D7126596_1_105_c.jpeg",
+      "width": 768,
+      "height": 1024
+    },
+    {
+      "filename": "FullSizeRender.jpeg",
+      "width": 5008,
+      "height": 4089
+    },
+    {
+      "filename": "IMG_0049.JPG",
+      "width": 2048,
+      "height": 1365
+    },
+    {
+      "filename": "IMG_0067.JPG",
+      "width": 1365,
+      "height": 2048
+    },
+    {
+      "filename": "IMG_0106.JPG",
+      "width": 1365,
+      "height": 2048
+    },
+    {
+      "filename": "IMG_0332.jpeg",
+      "width": 3024,
+      "height": 4032
+    },
+    {
+      "filename": "IMG_0436.jpeg",
+      "width": 3024,
+      "height": 2689
+    },
+    {
+      "filename": "IMG_0552.jpeg",
+      "width": 4032,
+      "height": 3024
+    },
+    {
+      "filename": "IMG_1170.jpeg",
+      "width": 4032,
+      "height": 3024
+    },
+    {
+      "filename": "IMG_1251.jpeg",
+      "width": 2081,
+      "height": 7332
+    },
+    {
+      "filename": "IMG_1274.jpeg",
+      "width": 4032,
+      "height": 3024
+    },
+    {
+      "filename": "IMG_1348.jpeg",
+      "width": 8064,
+      "height": 6048
+    },
+    {
+      "filename": "IMG_1454.jpeg",
+      "width": 1179,
+      "height": 1422
+    },
+    {
+      "filename": "IMG_1471.jpeg",
+      "width": 2865,
+      "height": 3184
+    },
+    {
+      "filename": "IMG_1494.jpeg",
+      "width": 4032,
+      "height": 3024
+    },
+    {
+      "filename": "IMG_9351 2.PNG",
+      "width": 1136,
+      "height": 870
+    },
+    {
+      "filename": "IMG_9820.PNG",
+      "width": 1136,
+      "height": 870
+    },
+    {
+      "filename": "IMG_9841.jpeg",
+      "width": 4032,
+      "height": 3024
+    },
+    {
+      "filename": "image000001.JPG",
+      "width": 1200,
+      "height": 1600
     }
   ]
 }

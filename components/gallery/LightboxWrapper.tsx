@@ -38,6 +38,7 @@ export default function LightboxWrapper({
               src={photoSrc(albumSlug, photo.filename)}
               alt={photo.caption ?? `Photo ${i + 1}`}
               fill
+              sizes="(max-width: 640px) 50vw, 33vw"
               className="object-cover"
             />
           </button>
