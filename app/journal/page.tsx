@@ -3,6 +3,7 @@ import { getAllJournalEntries } from "@/lib/journal";
 import PageWrapper from "@/components/layout/PageWrapper";
 import SectionHeading from "@/components/ui/SectionHeading";
 import JournalList from "@/components/journal/JournalList";
+import NewEntryForm from "@/components/journal/NewEntryForm";
 
 export const metadata: Metadata = {
   title: "Journal",
@@ -18,6 +19,7 @@ export default function JournalPage() {
         title="Journal"
         subtitle="Letters written for Kylo, to read whenever he's ready."
       />
+      <NewEntryForm />
       <JournalList entries={entries} />
     </PageWrapper>
   );
