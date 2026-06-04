@@ -1,6 +1,7 @@
 import fs from "fs";
 import path from "path";
 import sharp from "sharp";
+import { put } from "@vercel/blob";
 import type { Photo } from "@/lib/types";
 
 export async function POST(
@@ -16,13 +17,10 @@ export async function POST(
     albumSlug,
     "album.json"
   );
-  const imagesDir = path.join(process.cwd(), "public", "images", albumSlug);
 
   if (!fs.existsSync(albumFile)) {
     return Response.json({ error: "Album not found" }, { status: 404 });
   }
-
-  fs.mkdirSync(imagesDir, { recursive: true });
 
   const formData = await request.formData();
   const files = formData.getAll("photos") as File[];
@@ -39,19 +37,24 @@ export async function POST(
     if (!file.type.startsWith("image/")) continue;
 
     const buffer = Buffer.from(await file.arrayBuffer());
-    const filename = file.name;
 
-    fs.writeFileSync(path.join(imagesDir, filename), buffer);
+    // Upload to Vercel Blob; pathname scopes it under the album folder
+    const blob = await put(`${albumSlug}/${file.name}`, buffer, {
+      access: "public",
+      contentType: file.type,
+    });
 
-    if (!existing.has(filename)) {
+    const blobUrl = blob.url;
+
+    if (!existing.has(blobUrl)) {
       const meta = await sharp(buffer).metadata();
       album.photos.push({
-        filename,
+        filename: blobUrl,
         width: meta.width ?? 800,
         height: meta.height ?? 600,
       } satisfies Photo);
-      existing.add(filename);
-      added.push(filename);
+      existing.add(blobUrl);
+      added.push(file.name);
     }
   }
 

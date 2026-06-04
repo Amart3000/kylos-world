@@ -7,6 +7,8 @@ import LightboxWrapper from "@/components/gallery/LightboxWrapper";
 import UploadButton from "@/components/gallery/UploadButton";
 import Link from "next/link";
 
+export const dynamic = "force-dynamic";
+
 type Props = { params: Promise<{ album: string }> };
 
 export async function generateStaticParams() {
