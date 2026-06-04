@@ -4,6 +4,7 @@ import { format, parseISO } from "date-fns";
 import { getAllAlbums, getAlbumBySlug } from "@/lib/gallery";
 import PageWrapper from "@/components/layout/PageWrapper";
 import LightboxWrapper from "@/components/gallery/LightboxWrapper";
+import UploadButton from "@/components/gallery/UploadButton";
 import Link from "next/link";
 
 type Props = { params: Promise<{ album: string }> };
@@ -41,6 +42,7 @@ export default async function AlbumPage({ params }: Props) {
           <p className="text-warm-600 mt-3 text-lg">{album.description}</p>
         )}
       </div>
+      <UploadButton albumSlug={album.slug} />
       <LightboxWrapper albumSlug={album.slug} photos={album.photos} />
     </PageWrapper>
   );
