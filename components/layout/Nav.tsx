@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { siteConfig } from "@/lib/config";
+import WolfMark from "@/components/ui/WolfMark";
 
 const links = [
   { href: "/", label: "Home" },
@@ -19,8 +20,9 @@ export default function Nav() {
       <div className="max-w-5xl mx-auto px-4 sm:px-6 flex items-center justify-between h-16">
         <Link
           href="/"
-          className="font-heading text-xl text-warm-900 hover:text-accent transition-colors"
+          className="flex items-center gap-2 font-heading text-xl text-warm-900 hover:text-accent transition-colors"
         >
+          <WolfMark size={26} className="text-accent" />
           {siteConfig.siteName}
         </Link>
         <nav className="flex gap-6">

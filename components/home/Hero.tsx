@@ -1,19 +1,33 @@
 import Image from "next/image";
 import { siteConfig } from "@/lib/config";
 import { format } from "date-fns";
+import WolfMark from "@/components/ui/WolfMark";
 
 export default function Hero() {
   return (
-    <section className="min-h-[85vh] flex items-center justify-center bg-gradient-to-b from-warm-100 to-warm-50 px-4">
-      <div className="max-w-3xl w-full text-center flex flex-col items-center gap-8">
-        <div className="relative w-56 h-56 sm:w-72 sm:h-72 rounded-full overflow-hidden border-4 border-warm-200 shadow-xl">
-          <Image
-            src={siteConfig.heroImage}
-            alt={siteConfig.fullName}
-            fill
-            className="object-cover"
-            priority
-          />
+    <section className="relative min-h-[85vh] flex items-center justify-center bg-gradient-to-b from-warm-100 to-warm-50 px-4 overflow-hidden">
+
+      {/* Decorative background wolf marks */}
+      <WolfMark size={220} className="absolute -top-10 -left-12 text-warm-200 rotate-[-15deg] pointer-events-none select-none" />
+      <WolfMark size={160} className="absolute bottom-10 -right-8 text-warm-200 rotate-[12deg] pointer-events-none select-none" />
+      <WolfMark size={90}  className="absolute top-24 right-16 text-warm-100 rotate-[6deg] pointer-events-none select-none" />
+
+      <div className="relative max-w-3xl w-full text-center flex flex-col items-center gap-8">
+
+        {/* Hero photo with forest-green ring */}
+        <div className="relative">
+          <div className="relative w-56 h-56 sm:w-72 sm:h-72 rounded-full overflow-hidden border-4 border-accent shadow-xl">
+            <Image
+              src={siteConfig.heroImage}
+              alt={siteConfig.fullName}
+              fill
+              className="object-cover"
+              priority
+            />
+          </div>
+          {/* Small wolf marks flanking the photo */}
+          <WolfMark size={40} className="absolute -left-6 top-1/2 -translate-y-1/2 text-accent opacity-70" />
+          <WolfMark size={40} className="absolute -right-6 top-1/2 -translate-y-1/2 text-accent opacity-70" />
         </div>
 
         <div>
