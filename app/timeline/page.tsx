@@ -2,7 +2,9 @@ import type { Metadata } from "next";
 import { getAllEvents } from "@/lib/events";
 import PageWrapper from "@/components/layout/PageWrapper";
 import SectionHeading from "@/components/ui/SectionHeading";
-import TimelineList from "@/components/timeline/TimelineList";
+import DraggableTimeline from "@/components/timeline/DraggableTimeline";
+
+export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Timeline",
@@ -18,7 +20,7 @@ export default function TimelinePage() {
         title="Timeline"
         subtitle="Every big moment, big and small, in the order they happened."
       />
-      <TimelineList events={events} />
+      <DraggableTimeline initialEvents={events} />
     </PageWrapper>
   );
 }

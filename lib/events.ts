@@ -10,7 +10,5 @@ export function getAllEvents(): TimelineEvent[] {
   const raw = fs.readFileSync(EVENTS_FILE, "utf8");
   const events: TimelineEvent[] = JSON.parse(raw);
 
-  return events.sort(
-    (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
-  );
+  return events;
 }
