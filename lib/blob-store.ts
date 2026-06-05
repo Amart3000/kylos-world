@@ -2,11 +2,11 @@ import { put, list, del } from "@vercel/blob";
 import fs from "fs";
 import path from "path";
 
-const hasBlob = !!process.env.BLOB_READ_WRITE_TOKEN;
+export const hasBlob = !!process.env.BLOB_READ_WRITE_TOKEN;
 
 export async function readJson<T>(
   blobPath: string,
-  fileFallback: string
+  fileFallback?: string
 ): Promise<T | null> {
   if (hasBlob) {
     try {
@@ -19,7 +19,7 @@ export async function readJson<T>(
     } catch {}
   }
 
-  if (fs.existsSync(fileFallback)) {
+  if (fileFallback && fs.existsSync(fileFallback)) {
     return JSON.parse(fs.readFileSync(fileFallback, "utf8")) as T;
   }
   return null;
@@ -27,11 +27,10 @@ export async function readJson<T>(
 
 export async function writeJson<T>(
   blobPath: string,
-  fileFallback: string,
+  fileFallback: string | undefined,
   data: T
 ): Promise<void> {
   if (hasBlob) {
-    // Remove existing blob at this path before writing the new one
     const { blobs } = await list({ prefix: blobPath });
     const existing = blobs.find((b) => b.pathname === blobPath);
     if (existing) await del(existing.url);
@@ -44,7 +43,8 @@ export async function writeJson<T>(
     return;
   }
 
-  // Local file fallback
-  fs.mkdirSync(path.dirname(fileFallback), { recursive: true });
-  fs.writeFileSync(fileFallback, JSON.stringify(data, null, 2));
+  if (fileFallback) {
+    fs.mkdirSync(path.dirname(fileFallback), { recursive: true });
+    fs.writeFileSync(fileFallback, JSON.stringify(data, null, 2));
+  }
 }

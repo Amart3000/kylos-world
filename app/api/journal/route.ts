@@ -1,5 +1,5 @@
-import fs from "fs";
-import path from "path";
+import { addJournalEntry } from "@/lib/journal";
+import type { JournalEntry } from "@/lib/types";
 
 function toSlug(title: string): string {
   return title
@@ -25,28 +25,17 @@ export async function POST(request: Request) {
 
   const today = new Date().toISOString().slice(0, 10);
   const slug = toSlug(title) || "entry";
-  const filename = `${today}-${slug}.mdx`;
-  const journalDir = path.join(process.cwd(), "content", "journal");
 
-  fs.mkdirSync(journalDir, { recursive: true });
+  const entry: JournalEntry = {
+    slug,
+    title: title.trim(),
+    date: today,
+    author: author.trim(),
+    excerpt: excerpt?.trim() || undefined,
+    featured: false,
+    content: content.trim(),
+  };
 
-  const filePath = path.join(journalDir, filename);
-  if (fs.existsSync(filePath)) {
-    return Response.json({ error: "An entry with that title already exists for today" }, { status: 409 });
-  }
-
-  const frontmatter = [
-    "---",
-    `title: ${JSON.stringify(title.trim())}`,
-    `date: ${JSON.stringify(today)}`,
-    `author: ${JSON.stringify(author.trim())}`,
-    excerpt?.trim() ? `excerpt: ${JSON.stringify(excerpt.trim())}` : null,
-    "---",
-  ]
-    .filter(Boolean)
-    .join("\n");
-
-  fs.writeFileSync(filePath, `${frontmatter}\n\n${content.trim()}\n`);
-
+  await addJournalEntry(entry);
   return Response.json({ slug });
 }

@@ -2,27 +2,24 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { format, parseISO } from "date-fns";
 import { MDXRemote } from "next-mdx-remote/rsc";
-import { getAllJournalEntries, getJournalEntryBySlug } from "@/lib/journal";
+import { getJournalEntryBySlug } from "@/lib/journal";
 import PageWrapper from "@/components/layout/PageWrapper";
 import Link from "next/link";
 
-type Props = { params: Promise<{ slug: string }> };
+export const dynamic = "force-dynamic";
 
-export async function generateStaticParams() {
-  const entries = getAllJournalEntries();
-  return entries.map((e) => ({ slug: e.slug }));
-}
+type Props = { params: Promise<{ slug: string }> };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
-  const entry = getJournalEntryBySlug(slug);
+  const entry = await getJournalEntryBySlug(slug);
   if (!entry) return {};
   return { title: entry.title, description: entry.excerpt };
 }
 
 export default async function JournalEntryPage({ params }: Props) {
   const { slug } = await params;
-  const entry = getJournalEntryBySlug(slug);
+  const entry = await getJournalEntryBySlug(slug);
   if (!entry) notFound();
 
   return (

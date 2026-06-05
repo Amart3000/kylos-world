@@ -5,13 +5,15 @@ import SectionHeading from "@/components/ui/SectionHeading";
 import JournalList from "@/components/journal/JournalList";
 import NewEntryForm from "@/components/journal/NewEntryForm";
 
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = {
   title: "Journal",
   description: "Letters and notes from the people who love Kylo most.",
 };
 
-export default function JournalPage() {
-  const entries = getAllJournalEntries();
+export default async function JournalPage() {
+  const entries = await getAllJournalEntries();
 
   return (
     <PageWrapper>

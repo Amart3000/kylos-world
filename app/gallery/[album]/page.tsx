@@ -12,20 +12,20 @@ export const dynamic = "force-dynamic";
 type Props = { params: Promise<{ album: string }> };
 
 export async function generateStaticParams() {
-  const albums = getAllAlbums();
+  const albums = await getAllAlbums();
   return albums.map((a) => ({ album: a.slug }));
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { album: slug } = await params;
-  const album = getAlbumBySlug(slug);
+  const album = await getAlbumBySlug(slug);
   if (!album) return {};
   return { title: album.title, description: album.description };
 }
 
 export default async function AlbumPage({ params }: Props) {
   const { album: slug } = await params;
-  const album = getAlbumBySlug(slug);
+  const album = await getAlbumBySlug(slug);
   if (!album) notFound();
 
   return (

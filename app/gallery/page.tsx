@@ -4,13 +4,15 @@ import PageWrapper from "@/components/layout/PageWrapper";
 import SectionHeading from "@/components/ui/SectionHeading";
 import AlbumGrid from "@/components/gallery/AlbumGrid";
 
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = {
   title: "Gallery",
   description: "Photo albums from Kylo's life.",
 };
 
-export default function GalleryPage() {
-  const albums = getAllAlbums();
+export default async function GalleryPage() {
+  const albums = await getAllAlbums();
 
   return (
     <PageWrapper>

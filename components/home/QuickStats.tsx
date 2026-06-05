@@ -15,8 +15,8 @@ export default async function QuickStats() {
       : `${months} month${months !== 1 ? "s" : ""} old`;
 
   const events = await getAllEvents();
-  const entries = getAllJournalEntries();
-  const albums = getAllAlbums();
+  const entries = await getAllJournalEntries();
+  const albums = await getAllAlbums();
 
   const stats = [
     { value: ageLabel, label: "Right now" },
