@@ -2,15 +2,16 @@ import Image from "next/image";
 import { siteConfig } from "@/lib/config";
 import { format } from "date-fns";
 import WolfMark from "@/components/ui/WolfMark";
+import WolfHowl from "@/components/ui/WolfHowl";
 
 export default function Hero() {
   return (
     <section className="relative min-h-[85vh] flex items-center justify-center bg-gradient-to-b from-warm-100 to-warm-50 px-4 overflow-hidden">
 
-      {/* Decorative background wolf marks */}
-      <WolfMark size={220} className="absolute -top-10 -left-12 text-warm-200 rotate-[-15deg] pointer-events-none select-none" />
-      <WolfMark size={160} className="absolute bottom-10 -right-8 text-warm-200 rotate-[12deg] pointer-events-none select-none" />
-      <WolfMark size={90}  className="absolute top-24 right-16 text-warm-100 rotate-[6deg] pointer-events-none select-none" />
+      {/* Decorative background wolf silhouettes */}
+      <WolfHowl size={220} className="absolute -top-6 -left-10 text-warm-200 rotate-[-10deg] pointer-events-none select-none" />
+      <WolfHowl size={170} className="absolute -bottom-4 -right-8 text-warm-200 rotate-[170deg] pointer-events-none select-none" />
+      <WolfMark size={80}  className="absolute top-20 right-12 text-warm-100 rotate-[8deg] pointer-events-none select-none" />
 
       <div className="relative max-w-3xl w-full text-center flex flex-col items-center gap-8">
 
