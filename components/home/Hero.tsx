@@ -1,17 +1,17 @@
 import Image from "next/image";
 import { siteConfig } from "@/lib/config";
 import { format } from "date-fns";
-import WolfMark from "@/components/ui/WolfMark";
-import WolfHowl from "@/components/ui/WolfHowl";
+import ForestMark from "@/components/ui/WolfMark";
+import ForestScene from "@/components/ui/WolfHowl";
 
 export default function Hero() {
   return (
     <section className="relative min-h-[85vh] flex items-center justify-center bg-gradient-to-b from-warm-100 to-warm-50 px-4 overflow-hidden">
 
-      {/* Decorative background wolf silhouettes */}
-      <WolfHowl size={220} className="absolute -top-6 -left-10 text-warm-200 rotate-[-10deg] pointer-events-none select-none" />
-      <WolfHowl size={170} className="absolute -bottom-4 -right-8 text-warm-200 rotate-[170deg] pointer-events-none select-none" />
-      <WolfMark size={80}  className="absolute top-20 right-12 text-warm-100 rotate-[8deg] pointer-events-none select-none" />
+      {/* Decorative background forest silhouettes */}
+      <ForestScene size={220} className="absolute -top-6 -left-10 text-warm-200 rotate-[-10deg] pointer-events-none select-none" />
+      <ForestScene size={170} className="absolute -bottom-4 -right-8 text-warm-200 rotate-[170deg] pointer-events-none select-none" />
+      <ForestMark size={80}  className="absolute top-20 right-12 text-warm-100 rotate-[8deg] pointer-events-none select-none" />
 
       <div className="relative max-w-3xl w-full text-center flex flex-col items-center gap-8">
 
@@ -26,9 +26,9 @@ export default function Hero() {
               priority
             />
           </div>
-          {/* Small wolf marks flanking the photo */}
-          <WolfMark size={40} className="absolute -left-6 top-1/2 -translate-y-1/2 text-accent opacity-70" />
-          <WolfMark size={40} className="absolute -right-6 top-1/2 -translate-y-1/2 text-accent opacity-70" />
+          {/* Pine tree marks flanking the photo */}
+          <ForestMark size={40} className="absolute -left-6 top-1/2 -translate-y-1/2 text-accent opacity-70" />
+          <ForestMark size={40} className="absolute -right-6 top-1/2 -translate-y-1/2 text-accent opacity-70" />
         </div>
 
         <div>
