@@ -1,8 +1,5 @@
-import fs from "fs";
-import path from "path";
 import type { TimelineEvent } from "@/lib/types";
-
-const EVENTS_FILE = path.join(process.cwd(), "content", "events", "events.json");
+import { getAllEvents, saveEvents } from "@/lib/events";
 
 function toId(title: string): string {
   return (
@@ -30,9 +27,7 @@ export async function POST(request: Request) {
     return Response.json({ error: "title, date, and category are required" }, { status: 400 });
   }
 
-  const events: TimelineEvent[] = fs.existsSync(EVENTS_FILE)
-    ? JSON.parse(fs.readFileSync(EVENTS_FILE, "utf8"))
-    : [];
+  const events = await getAllEvents();
 
   const newEvent: TimelineEvent = {
     id: toId(title),
@@ -43,8 +38,7 @@ export async function POST(request: Request) {
   };
 
   events.push(newEvent);
-  fs.mkdirSync(path.dirname(EVENTS_FILE), { recursive: true });
-  fs.writeFileSync(EVENTS_FILE, JSON.stringify(events, null, 2));
+  await saveEvents(events);
 
   return Response.json({ event: newEvent });
 }

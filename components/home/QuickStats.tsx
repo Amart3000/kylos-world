@@ -4,7 +4,7 @@ import { getAllEvents } from "@/lib/events";
 import { getAllJournalEntries } from "@/lib/journal";
 import { getAllAlbums } from "@/lib/gallery";
 
-export default function QuickStats() {
+export default async function QuickStats() {
   const now = new Date();
   const months = differenceInMonths(now, siteConfig.birthdate);
   const days = differenceInDays(now, siteConfig.birthdate);
@@ -14,7 +14,7 @@ export default function QuickStats() {
       ? `${days} day${days !== 1 ? "s" : ""} old`
       : `${months} month${months !== 1 ? "s" : ""} old`;
 
-  const events = getAllEvents();
+  const events = await getAllEvents();
   const entries = getAllJournalEntries();
   const albums = getAllAlbums();
 

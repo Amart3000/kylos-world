@@ -49,6 +49,7 @@ export default function DraggableTimeline({ initialEvents }: { initialEvents: Ti
   const [editingId, setEditingId]           = useState<string | null>(null);
   const [draft, setDraft]                   = useState<Draft>({ title: "", date: "", category: "milestone", note: "" });
   const [saving, setSaving]                 = useState(false);
+  const [saveError, setSaveError]           = useState("");
   const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
 
   /* ── reorder ── */
@@ -74,19 +75,27 @@ export default function DraggableTimeline({ initialEvents }: { initialEvents: Ti
     setDraft({ title: event.title, date: event.date, category: event.category, note: event.note ?? "" });
     setEditingId(event.id);
     setConfirmDeleteId(null);
+    setSaveError("");
   }
 
   async function saveEdit(id: string) {
     setSaving(true);
-    const res = await fetch(`/api/timeline/${id}`, {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(draft),
-    });
-    if (res.ok) {
-      const { event } = await res.json();
-      setEvents((prev) => prev.map((e) => (e.id === id ? event : e)));
-      setEditingId(null);
+    setSaveError("");
+    try {
+      const res = await fetch(`/api/timeline/${id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(draft),
+      });
+      if (res.ok) {
+        const { event } = await res.json();
+        setEvents((prev) => prev.map((e) => (e.id === id ? event : e)));
+        setEditingId(null);
+      } else {
+        setSaveError("Save failed — please try again.");
+      }
+    } catch {
+      setSaveError("Save failed — please try again.");
     }
     setSaving(false);
   }
@@ -162,6 +171,9 @@ export default function DraggableTimeline({ initialEvents }: { initialEvents: Ti
                         placeholder="Note (optional)"
                         className="w-full rounded-lg border border-warm-200 bg-white px-3 py-1.5 text-sm text-warm-900 placeholder:text-warm-300 focus:outline-none focus:ring-2 focus:ring-accent resize-none"
                       />
+                      {saveError && (
+                        <p className="text-red-500 text-xs">{saveError}</p>
+                      )}
                       <div className="flex gap-2 justify-end">
                         <button
                           onClick={() => setEditingId(null)}

@@ -11,8 +11,8 @@ export const metadata: Metadata = {
   description: "A chronological record of Kylo's milestones.",
 };
 
-export default function TimelinePage() {
-  const events = getAllEvents();
+export default async function TimelinePage() {
+  const events = await getAllEvents();
 
   return (
     <PageWrapper>
