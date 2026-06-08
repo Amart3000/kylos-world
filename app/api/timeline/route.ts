@@ -27,18 +27,22 @@ export async function POST(request: Request) {
     return Response.json({ error: "title, date, and category are required" }, { status: 400 });
   }
 
-  const events = await getAllEvents();
+  try {
+    const events = await getAllEvents();
 
-  const newEvent: TimelineEvent = {
-    id: toId(title),
-    title: title.trim(),
-    date,
-    category,
-    ...(note?.trim() ? { note: note.trim() } : {}),
-  };
+    const newEvent: TimelineEvent = {
+      id: toId(title),
+      title: title.trim(),
+      date,
+      category,
+      ...(note?.trim() ? { note: note.trim() } : {}),
+    };
 
-  events.push(newEvent);
-  await saveEvents(events);
-
-  return Response.json({ event: newEvent });
+    events.push(newEvent);
+    await saveEvents(events);
+    return Response.json({ event: newEvent });
+  } catch (err) {
+    console.error("[timeline POST]", err);
+    return Response.json({ error: String(err) }, { status: 500 });
+  }
 }

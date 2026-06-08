@@ -23,19 +23,24 @@ export async function POST(request: Request) {
     return Response.json({ error: "title, author, and content are required" }, { status: 400 });
   }
 
-  const today = new Date().toISOString().slice(0, 10);
-  const slug = toSlug(title) || "entry";
+  try {
+    const today = new Date().toISOString().slice(0, 10);
+    const slug = toSlug(title) || "entry";
 
-  const entry: JournalEntry = {
-    slug,
-    title: title.trim(),
-    date: today,
-    author: author.trim(),
-    excerpt: excerpt?.trim() || undefined,
-    featured: false,
-    content: content.trim(),
-  };
+    const entry: JournalEntry = {
+      slug,
+      title: title.trim(),
+      date: today,
+      author: author.trim(),
+      excerpt: excerpt?.trim() || undefined,
+      featured: false,
+      content: content.trim(),
+    };
 
-  await addJournalEntry(entry);
-  return Response.json({ slug });
+    await addJournalEntry(entry);
+    return Response.json({ slug });
+  } catch (err) {
+    console.error("[journal POST]", err);
+    return Response.json({ error: String(err) }, { status: 500 });
+  }
 }

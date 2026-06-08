@@ -1,4 +1,4 @@
-import { put, list, del } from "@vercel/blob";
+import { put, list } from "@vercel/blob";
 import fs from "fs";
 import path from "path";
 
@@ -13,10 +13,18 @@ export async function readJson<T>(
       const { blobs } = await list({ prefix: blobPath });
       const match = blobs.find((b) => b.pathname === blobPath);
       if (match) {
-        const res = await fetch(match.url, { cache: "no-store" });
+        // Append timestamp to bypass any CDN layer that ignores Cache-Control
+        const bustUrl = `${match.url}?_t=${Date.now()}`;
+        const res = await fetch(bustUrl, {
+          cache: "no-store",
+          headers: { "Cache-Control": "no-cache, no-store" },
+        });
+        if (!res.ok) throw new Error(`Blob fetch ${res.status}`);
         return (await res.json()) as T;
       }
-    } catch {}
+    } catch (err) {
+      console.error("[blob-store] readJson failed:", blobPath, err);
+    }
   }
 
   if (fileFallback && fs.existsSync(fileFallback)) {
@@ -31,14 +39,14 @@ export async function writeJson<T>(
   data: T
 ): Promise<void> {
   if (hasBlob) {
-    const { blobs } = await list({ prefix: blobPath });
-    const existing = blobs.find((b) => b.pathname === blobPath);
-    if (existing) await del(existing.url);
-
+    // allowOverwrite replaces in-place without a separate del step.
+    // cacheControlMaxAge:0 ensures CDN never serves stale content.
     await put(blobPath, JSON.stringify(data, null, 2), {
       access: "public",
       contentType: "application/json",
       addRandomSuffix: false,
+      allowOverwrite: true,
+      cacheControlMaxAge: 0,
     });
     return;
   }
