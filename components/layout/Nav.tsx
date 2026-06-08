@@ -16,7 +16,7 @@ export default function Nav() {
   const pathname = usePathname();
 
   return (
-    <header className="border-b border-warm-200 bg-warm-50/90 backdrop-blur-sm sticky top-0 z-40">
+    <header className="border-b border-white/20 bg-warm-50/88 backdrop-blur-md sticky top-0 z-40">
       <div className="max-w-5xl mx-auto px-4 sm:px-6 flex items-center justify-between h-16">
         <Link
           href="/"

@@ -1,6 +1,13 @@
 "use client";
 import { useEffect, useRef } from "react";
 
+export interface ForestBackgroundProps {
+  /** When true the canvas captures clicks and bursts sparkles. Default: false. */
+  interactive?: boolean;
+  /** CSS position strategy. "fixed" covers the full viewport; "absolute" fills the nearest positioned ancestor. */
+  position?: "fixed" | "absolute";
+}
+
 // Stable tree positions computed once at module load (no Math.random — avoids hydration mismatch)
 const FAR_TREES = Array.from({ length: 26 }, (_, i) => ({
   x: i * 46 + (i % 5 === 1 ? 9 : i % 5 === 3 ? -7 : 0),
@@ -12,7 +19,10 @@ const MID_TREES = Array.from({ length: 17 }, (_, i) => ({
   h: 108 + (i % 6) * 17,
 }));
 
-export default function ForestBackground() {
+export default function ForestBackground({
+  interactive = false,
+  position = "fixed",
+}: ForestBackgroundProps = {}) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
@@ -99,7 +109,7 @@ export default function ForestBackground() {
         });
       }
     }
-    canvas.addEventListener("click", handleClick);
+    if (interactive) canvas.addEventListener("click", handleClick);
 
     let animId: number;
 
@@ -247,13 +257,16 @@ export default function ForestBackground() {
     return () => {
       cancelAnimationFrame(animId);
       clearTimeout(deerTimeout);
-      canvas!.removeEventListener("click", handleClick);
+      if (interactive) canvas!.removeEventListener("click", handleClick);
       ro.disconnect();
     };
-  }, []);
+  }, [interactive]);
 
   return (
-    <div className="absolute inset-0 overflow-hidden" style={{ zIndex: 0 }}>
+    <div
+      className="inset-0 overflow-hidden"
+      style={{ position, zIndex: position === "fixed" ? -1 : 0 }}
+    >
       {/* Sky gradient */}
       <div
         className="absolute inset-0"
@@ -377,12 +390,17 @@ export default function ForestBackground() {
         style={{ height: "11%", background: "linear-gradient(to top, #0c2c18 0%, #194c28 55%, transparent 100%)" }}
       />
 
-      {/* Canvas — click to burst sparkles */}
+      {/* Canvas — ambient animations; click sparkles only when interactive=true */}
       <canvas
         ref={canvasRef}
         className="absolute inset-0"
-        style={{ width: "100%", height: "100%", cursor: "crosshair", pointerEvents: "auto" }}
-        title="Click anywhere for a surprise!"
+        style={{
+          width: "100%",
+          height: "100%",
+          pointerEvents: interactive ? "auto" : "none",
+          cursor: interactive ? "crosshair" : "default",
+        }}
+        title={interactive ? "Click anywhere for a surprise!" : undefined}
       />
     </div>
   );
