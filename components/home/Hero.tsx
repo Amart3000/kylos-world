@@ -8,14 +8,22 @@ export default function Hero() {
   return (
     <section className="relative min-h-[85vh] flex items-center justify-center bg-gradient-to-b from-warm-100 to-warm-50 px-4 overflow-hidden">
 
-      {/* Decorative background forest silhouettes */}
+      {/* Large forest scenes — corners */}
       <ForestScene size={220} className="absolute -top-6 -left-10 text-warm-200 rotate-[-10deg] pointer-events-none select-none" />
       <ForestScene size={170} className="absolute -bottom-4 -right-8 text-warm-200 rotate-[170deg] pointer-events-none select-none" />
-      <ForestMark size={80}  className="absolute top-20 right-12 text-warm-100 rotate-[8deg] pointer-events-none select-none" />
+
+      {/* Mid-size scenes — opposite corners */}
+      <ForestScene size={130} className="absolute top-10 right-6 text-warm-100 rotate-[12deg] pointer-events-none select-none" />
+      <ForestScene size={110} className="absolute bottom-10 left-4 text-warm-100 rotate-[-5deg] pointer-events-none select-none" />
+
+      {/* Scattered pine marks */}
+      <ForestMark size={52} className="absolute top-6 left-1/3 text-warm-200 rotate-[-6deg] pointer-events-none select-none" />
+      <ForestMark size={44} className="absolute bottom-8 right-1/4 text-warm-200 rotate-[10deg] pointer-events-none select-none" />
+      <ForestMark size={36} className="absolute top-1/3 right-4 text-warm-100 rotate-[4deg] pointer-events-none select-none" />
 
       <div className="relative max-w-3xl w-full text-center flex flex-col items-center gap-8">
 
-        {/* Hero photo with forest-green ring */}
+        {/* Hero photo */}
         <div className="relative">
           <div className="relative w-56 h-56 sm:w-72 sm:h-72 rounded-full overflow-hidden border-4 border-accent shadow-xl">
             <Image

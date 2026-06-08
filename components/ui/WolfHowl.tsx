@@ -15,16 +15,29 @@ export default function ForestScene({
       aria-hidden="true"
       className={className}
     >
+      {/* === Far-left tiny pine — peeks from edge === */}
+      <polygon points="4,44 0,60 8,60" fill="currentColor" opacity="0.7" />
+      <polygon points="4,52 -2,72 10,72" fill="currentColor" opacity="0.7" />
+
       {/* === Left tall pine — 3 tiers + trunk === */}
       <polygon points="22,8 16,28 28,28" fill="currentColor" />
       <polygon points="22,20 10,48 34,48" fill="currentColor" />
       <polygon points="22,36 2,72 42,72" fill="currentColor" />
       <rect x="19" y="72" width="6" height="18" rx="2" fill="currentColor" />
 
+      {/* === Small background pine — centre, behind river === */}
+      <polygon points="50,36 46,52 54,52" fill="currentColor" opacity="0.6" />
+      <polygon points="50,44 44,66 56,66" fill="currentColor" opacity="0.6" />
+      <rect x="48" y="66" width="4" height="12" rx="1" fill="currentColor" opacity="0.6" />
+
       {/* === Right medium pine — 2 tiers + trunk === */}
       <polygon points="76,28 68,52 84,52" fill="currentColor" />
       <polygon points="76,40 58,78 94,78" fill="currentColor" />
       <rect x="73" y="78" width="6" height="16" rx="2" fill="currentColor" />
+
+      {/* === Far-right tiny pine — peeks from edge === */}
+      <polygon points="96,50 92,64 100,64" fill="currentColor" opacity="0.7" />
+      <polygon points="96,58 90,76 102,76" fill="currentColor" opacity="0.7" />
 
       {/* === Ground — left river bank === */}
       <path
@@ -32,40 +45,32 @@ export default function ForestScene({
         fill="currentColor"
       />
 
-      {/* === Ground — right river bank (river flows between x=46 and x=64) === */}
+      {/* === Ground — right river bank (river flows x=46 to x=64) === */}
       <path
         d="M64,126 C70,118 80,124 90,120 C95,118 100,122 100,120 L100,165 L64,165 Z"
         fill="currentColor"
       />
 
-      {/* === Left boulder (rounded, on left bank) === */}
+      {/* === Left boulder === */}
       <path
         d="M28,128 C26,120 32,116 38,118 C44,120 46,128 42,133 C38,136 30,135 28,128 Z"
         fill="currentColor"
       />
 
-      {/* === Right boulder (smaller, on right bank) === */}
+      {/* === Right boulder (smaller) === */}
       <path
         d="M72,124 C70,118 76,114 80,116 C84,118 84,126 80,129 C76,131 74,129 72,124 Z"
         fill="currentColor"
       />
 
-      {/* === River surface hint — two gentle wave lines === */}
+      {/* === River surface — gentle wave lines === */}
       <path
         d="M47,138 C51,134 57,142 63,138"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        fill="none"
-        opacity="0.5"
+        stroke="currentColor" strokeWidth="2" strokeLinecap="round" fill="none" opacity="0.5"
       />
       <path
         d="M47,150 C52,146 58,154 63,150"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        fill="none"
-        opacity="0.5"
+        stroke="currentColor" strokeWidth="2" strokeLinecap="round" fill="none" opacity="0.5"
       />
     </svg>
   );
