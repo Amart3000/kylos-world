@@ -94,3 +94,35 @@ h1, h2, h3, h4, h5, h6 {
 .btn-shimmer:hover::after {
   animation: shimmer-slide 0.55s ease-out;
 }
+
+/* === Forest background animations === */
+@keyframes cloud-drift {
+  from { transform: translateX(0); }
+  to   { transform: translateX(115vw); }
+}
+
+@keyframes sway {
+  0%, 100% { transform: rotate(-1deg); }
+  50%       { transform: rotate(1deg); }
+}
+
+.animate-cloud-slow {
+  animation: cloud-drift 48s linear infinite;
+}
+.animate-cloud-med {
+  animation: cloud-drift 64s linear infinite;
+  animation-delay: -22s;
+}
+.animate-cloud-fast {
+  animation: cloud-drift 36s linear infinite;
+  animation-delay: -10s;
+}
+.animate-sway-left {
+  transform-origin: 50% 100%;
+  animation: sway 7s ease-in-out infinite;
+}
+.animate-sway-right {
+  transform-origin: 50% 100%;
+  animation: sway 8.5s ease-in-out infinite;
+  animation-delay: -3s;
+}

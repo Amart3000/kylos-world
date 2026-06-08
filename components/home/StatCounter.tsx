@@ -50,7 +50,7 @@ export default function StatCounter({
   return (
     <div
       ref={ref}
-      className="flex flex-col items-center p-6 rounded-2xl bg-warm-50 shadow-sm hover:shadow-md hover:-translate-y-1 transition-all duration-300"
+      className="flex flex-col items-center p-6 rounded-2xl bg-white/40 backdrop-blur-md border border-white/50 shadow-md hover:shadow-lg hover:-translate-y-1 transition-all duration-300"
     >
       <p className="font-heading text-3xl sm:text-4xl text-warm-900">{displayValue}</p>
       <p className="text-warm-500 text-xs mt-2 uppercase tracking-widest">{label}</p>

@@ -1,16 +1,17 @@
 import Hero from "@/components/home/Hero";
 import QuickStats from "@/components/home/QuickStats";
-import Treeline from "@/components/ui/Treeline";
+import ForestBackground from "@/components/home/ForestBackground";
 
-export const revalidate = 86400;
+export const dynamic = "force-dynamic";
 
 export default function HomePage() {
   return (
-    <>
-      <Hero />
-      <Treeline height={56} className="text-warm-200 -mt-1 block" />
-      <QuickStats />
-      <Treeline height={56} className="text-warm-200 block" />
-    </>
+    <div className="relative overflow-hidden">
+      <ForestBackground />
+      <div className="relative z-10">
+        <Hero />
+        <QuickStats />
+      </div>
+    </div>
   );
 }
