@@ -28,16 +28,16 @@ export default function UploadButton({ albumSlug }: { albumSlug: string }) {
         body: formData,
       });
 
-      if (!res.ok) throw new Error("Upload failed");
-
       const data = await res.json();
-      const count = data.added.length;
+      if (!res.ok) throw new Error(data?.error || `Server error ${res.status}`);
+
+      const count = data.added?.length ?? 0;
       setStatus("done");
       setMessage(`${count} photo${count !== 1 ? "s" : ""} added!`);
       router.refresh();
-    } catch {
+    } catch (err) {
       setStatus("error");
-      setMessage("Upload failed — please try again.");
+      setMessage(err instanceof Error ? err.message : "Upload failed — please try again.");
     } finally {
       if (inputRef.current) inputRef.current.value = "";
     }
