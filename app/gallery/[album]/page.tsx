@@ -5,6 +5,7 @@ import { getAllAlbums, getAlbumBySlug } from "@/lib/gallery";
 import PageWrapper from "@/components/layout/PageWrapper";
 import LightboxWrapper from "@/components/gallery/LightboxWrapper";
 import UploadButton from "@/components/gallery/UploadButton";
+import AlbumActions from "@/components/gallery/AlbumActions";
 import Link from "next/link";
 
 export const dynamic = "force-dynamic";
@@ -43,6 +44,7 @@ export default async function AlbumPage({ params }: Props) {
         {album.description && (
           <p className="text-warm-600 mt-3 text-lg">{album.description}</p>
         )}
+        <AlbumActions album={album} />
       </div>
       <UploadButton albumSlug={album.slug} />
       <LightboxWrapper albumSlug={album.slug} photos={album.photos} />

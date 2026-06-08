@@ -10,13 +10,17 @@ export default function AlbumCard({ album }: { album: GalleryAlbum }) {
       href={`/gallery/${album.slug}`}
       className="group block rounded-2xl overflow-hidden border border-warm-200 hover:border-warm-300 hover:shadow-md transition-all"
     >
-      <div className="relative aspect-[4/3] bg-warm-100">
-        <Image
-          src={photoSrc(album.slug, album.coverPhoto)}
-          alt={album.title}
-          fill
-          className="object-cover group-hover:scale-105 transition-transform duration-500"
-        />
+      <div className="relative aspect-[4/3] bg-warm-100 flex items-center justify-center">
+        {album.coverPhoto ? (
+          <Image
+            src={photoSrc(album.slug, album.coverPhoto)}
+            alt={album.title}
+            fill
+            className="object-cover group-hover:scale-105 transition-transform duration-500"
+          />
+        ) : (
+          <span className="text-4xl select-none">📷</span>
+        )}
       </div>
       <div className="p-4">
         <h3 className="font-heading text-lg text-warm-900">{album.title}</h3>

@@ -3,6 +3,7 @@ import { getAllAlbums } from "@/lib/gallery";
 import PageWrapper from "@/components/layout/PageWrapper";
 import SectionHeading from "@/components/ui/SectionHeading";
 import AlbumGrid from "@/components/gallery/AlbumGrid";
+import NewAlbumForm from "@/components/gallery/NewAlbumForm";
 
 export const dynamic = "force-dynamic";
 
@@ -20,6 +21,7 @@ export default async function GalleryPage() {
         title="Gallery"
         subtitle="A growing collection of moments, big and small."
       />
+      <NewAlbumForm />
       <AlbumGrid albums={albums} />
     </PageWrapper>
   );

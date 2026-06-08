@@ -2,6 +2,7 @@ import fs from "fs";
 import path from "path";
 import type { GalleryAlbum } from "./types";
 import { hasBlob, readJson, writeJson } from "./blob-store";
+import { del } from "@vercel/blob";
 
 const GALLERY_DIR = path.join(process.cwd(), "content", "gallery");
 const BLOB_PATH = "data/gallery/albums.json";
@@ -44,4 +45,32 @@ export async function saveAlbum(album: GalleryAlbum): Promise<void> {
     fs.mkdirSync(path.dirname(filePath), { recursive: true });
     fs.writeFileSync(filePath, JSON.stringify(album, null, 2));
   }
+}
+
+export async function deleteAlbum(slug: string): Promise<void> {
+  const albums = await getAllAlbums();
+  const filtered = albums.filter((a) => a.slug !== slug);
+
+  if (hasBlob) {
+    await writeJson(BLOB_PATH, undefined, filtered);
+  } else {
+    const albumDir = path.join(GALLERY_DIR, slug);
+    if (fs.existsSync(albumDir)) fs.rmSync(albumDir, { recursive: true });
+  }
+}
+
+export async function deletePhoto(albumSlug: string, filename: string): Promise<void> {
+  const album = await getAlbumBySlug(albumSlug);
+  if (!album) throw new Error("Album not found");
+
+  album.photos = album.photos.filter((p) => p.filename !== filename);
+  if (album.coverPhoto === filename) {
+    album.coverPhoto = album.photos[0]?.filename ?? "";
+  }
+
+  if (hasBlob && filename.startsWith("https://")) {
+    await del(filename);
+  }
+
+  await saveAlbum(album);
 }
