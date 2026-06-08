@@ -27,12 +27,11 @@ export default function NewAlbumForm() {
         const data = await res.json();
         throw new Error(data.error || "Failed to create album");
       }
-      const album = await res.json();
       setOpen(false);
       setTitle("");
       setDescription("");
-      router.push(`/gallery/${album.slug}`);
       router.refresh();
+      router.push("/gallery");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Something went wrong");
     } finally {

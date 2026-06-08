@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { format, parseISO } from "date-fns";
-import { getAllAlbums, getAlbumBySlug } from "@/lib/gallery";
+import { getAlbumBySlug } from "@/lib/gallery";
 import PageWrapper from "@/components/layout/PageWrapper";
 import LightboxWrapper from "@/components/gallery/LightboxWrapper";
 import UploadButton from "@/components/gallery/UploadButton";
@@ -9,13 +9,9 @@ import AlbumActions from "@/components/gallery/AlbumActions";
 import Link from "next/link";
 
 export const dynamic = "force-dynamic";
+export const dynamicParams = true;
 
 type Props = { params: Promise<{ album: string }> };
-
-export async function generateStaticParams() {
-  const albums = await getAllAlbums();
-  return albums.map((a) => ({ album: a.slug }));
-}
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { album: slug } = await params;
