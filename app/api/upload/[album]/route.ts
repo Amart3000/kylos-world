@@ -14,9 +14,8 @@ export async function POST(
     return Response.json({ error: `Album "${albumSlug}" not found` }, { status: 404 });
   }
 
-  const body = (await request.json()) as HandleUploadBody;
-
   try {
+    const body = (await request.json()) as HandleUploadBody;
     const jsonResponse = await handleUpload({
       body,
       request,
@@ -30,7 +29,7 @@ export async function POST(
           "image/heif",
         ],
         addRandomSuffix: false,
-        maximumSizeInBytes: 50 * 1024 * 1024,
+        allowOverwrite: true,
       }),
       onUploadCompleted: async () => {
         // Album metadata is registered via POST /api/gallery/[slug]/photos
