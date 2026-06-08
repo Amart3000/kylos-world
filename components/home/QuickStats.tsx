@@ -4,6 +4,7 @@ import { getAllEvents } from "@/lib/events";
 import { getAllJournalEntries } from "@/lib/journal";
 import { getAllAlbums } from "@/lib/gallery";
 import ForestMark from "@/components/ui/WolfMark";
+import StatCounter from "@/components/home/StatCounter";
 
 export default async function QuickStats() {
   const now = new Date();
@@ -27,19 +28,16 @@ export default async function QuickStats() {
   ];
 
   return (
-    <section className="relative bg-warm-100 py-12 px-4 overflow-hidden">
+    <section className="relative bg-warm-100 py-16 px-4 overflow-hidden">
       {/* Decorative corner trees */}
       <ForestMark size={56} className="absolute left-2 top-1/2 -translate-y-1/2 text-warm-200 -rotate-6 pointer-events-none select-none" />
       <ForestMark size={48} className="absolute left-14 top-2 text-warm-200 rotate-3 pointer-events-none select-none" />
       <ForestMark size={56} className="absolute right-2 top-1/2 -translate-y-1/2 text-warm-200 rotate-6 pointer-events-none select-none" />
       <ForestMark size={48} className="absolute right-14 bottom-2 text-warm-200 -rotate-3 pointer-events-none select-none" />
 
-      <div className="relative max-w-3xl mx-auto grid grid-cols-2 sm:grid-cols-4 gap-6 text-center">
+      <div className="relative max-w-3xl mx-auto grid grid-cols-2 sm:grid-cols-4 gap-4 text-center">
         {stats.map(({ value, label }) => (
-          <div key={label}>
-            <p className="font-heading text-3xl text-warm-900">{value}</p>
-            <p className="text-warm-500 text-sm mt-1">{label}</p>
-          </div>
+          <StatCounter key={label} value={value} label={label} />
         ))}
       </div>
     </section>

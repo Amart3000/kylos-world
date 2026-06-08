@@ -4,6 +4,7 @@ import { format, parseISO } from "date-fns";
 import { MDXRemote } from "next-mdx-remote/rsc";
 import { getJournalEntryBySlug } from "@/lib/journal";
 import PageWrapper from "@/components/layout/PageWrapper";
+import EntryActions from "@/components/journal/EntryActions";
 import Link from "next/link";
 
 export const dynamic = "force-dynamic";
@@ -37,6 +38,7 @@ export default async function JournalEntryPage({ params }: Props) {
         <p className="text-warm-400 text-sm mt-2">
           {format(parseISO(entry.date), "MMMM d, yyyy")} &middot; Written by {entry.author}
         </p>
+        <EntryActions entry={entry} />
       </header>
 
       <div className="prose prose-lg max-w-none">

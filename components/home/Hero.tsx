@@ -23,23 +23,27 @@ export default function Hero() {
 
       <div className="relative max-w-3xl w-full text-center flex flex-col items-center gap-8">
 
-        {/* Hero photo */}
-        <div className="relative">
-          <div className="relative w-56 h-56 sm:w-72 sm:h-72 rounded-full overflow-hidden border-4 border-accent shadow-xl">
-            <Image
-              src={siteConfig.heroImage}
-              alt={siteConfig.fullName}
-              fill
-              className="object-cover"
-              priority
-            />
+        {/* Floating photo with pulse ring */}
+        <div className="animate-fade-slide-up [animation-delay:0ms]">
+          <div className="animate-float">
+            <div className="relative">
+              <div className="relative w-56 h-56 sm:w-72 sm:h-72 rounded-full overflow-hidden border-4 border-accent shadow-xl animate-pulse-ring">
+                <Image
+                  src={siteConfig.heroImage}
+                  alt={siteConfig.fullName}
+                  fill
+                  className="object-cover"
+                  priority
+                />
+              </div>
+              <ForestMark size={40} className="absolute -left-6 top-1/2 -translate-y-1/2 text-accent opacity-70" />
+              <ForestMark size={40} className="absolute -right-6 top-1/2 -translate-y-1/2 text-accent opacity-70" />
+            </div>
           </div>
-          {/* Pine tree marks flanking the photo */}
-          <ForestMark size={40} className="absolute -left-6 top-1/2 -translate-y-1/2 text-accent opacity-70" />
-          <ForestMark size={40} className="absolute -right-6 top-1/2 -translate-y-1/2 text-accent opacity-70" />
         </div>
 
-        <div>
+        {/* Name + birthdate */}
+        <div className="animate-fade-slide-up [animation-delay:200ms]">
           <h1 className="font-heading text-6xl sm:text-8xl text-warm-900 leading-none">
             {siteConfig.babyName}
           </h1>
@@ -48,20 +52,22 @@ export default function Hero() {
           </p>
         </div>
 
-        <p className="text-warm-600 text-lg max-w-xl leading-relaxed">
+        {/* Bio */}
+        <p className="text-warm-600 text-lg max-w-xl leading-relaxed animate-fade-slide-up [animation-delay:350ms]">
           {siteConfig.bio}
         </p>
 
-        <div className="flex gap-4 flex-wrap justify-center">
+        {/* CTAs */}
+        <div className="flex gap-4 flex-wrap justify-center animate-fade-slide-up [animation-delay:500ms]">
           <a
             href="/gallery"
-            className="px-6 py-3 bg-accent text-warm-50 rounded-full font-medium hover:opacity-90 transition-opacity"
+            className="btn-shimmer px-7 py-3 bg-accent text-warm-50 rounded-full font-medium shadow-md hover:shadow-lg hover:opacity-95 transition-all duration-200"
           >
             View Photos
           </a>
           <a
             href="/journal"
-            className="px-6 py-3 border border-warm-300 text-warm-700 rounded-full font-medium hover:border-accent hover:text-accent transition-colors"
+            className="px-7 py-3 border-2 border-warm-300 text-warm-700 rounded-full font-medium hover:border-accent hover:text-accent hover:bg-warm-100 transition-colors duration-200"
           >
             Read Letters
           </a>

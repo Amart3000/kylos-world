@@ -39,3 +39,58 @@ h1, h2, h3, h4, h5, h6 {
   --tw-prose-quotes:        var(--color-warm-700);
   --tw-prose-quote-borders: var(--color-accent);
 }
+
+/* === Entrance & ambient animations === */
+@keyframes fade-slide-up {
+  from { opacity: 0; transform: translateY(28px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50%       { transform: translateY(-10px); }
+}
+
+@keyframes pulse-ring {
+  0%   { box-shadow: 0 0 0 0   oklch(0.48 0.17 145 / 0.45); }
+  70%  { box-shadow: 0 0 0 22px oklch(0.48 0.17 145 / 0); }
+  100% { box-shadow: 0 0 0 0   oklch(0.48 0.17 145 / 0); }
+}
+
+@keyframes shimmer-slide {
+  from { transform: translateX(-100%); }
+  to   { transform: translateX(200%); }
+}
+
+.animate-fade-slide-up {
+  animation: fade-slide-up 0.7s ease-out both;
+}
+
+.animate-float {
+  animation: float 4s ease-in-out infinite;
+}
+
+.animate-pulse-ring {
+  animation: pulse-ring 2.5s ease-out infinite;
+}
+
+.btn-shimmer {
+  position: relative;
+  overflow: hidden;
+}
+.btn-shimmer::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    oklch(1 0 0 / 0.28) 50%,
+    transparent 100%
+  );
+  transform: translateX(-100%);
+  pointer-events: none;
+}
+.btn-shimmer:hover::after {
+  animation: shimmer-slide 0.55s ease-out;
+}
