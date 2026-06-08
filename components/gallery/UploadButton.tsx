@@ -1,9 +1,26 @@
 "use client";
 
+import { upload } from "@vercel/blob/client";
 import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 
 type Status = "idle" | "uploading" | "done" | "error";
+
+function getImageDimensions(file: File): Promise<{ width: number; height: number }> {
+  return new Promise((resolve) => {
+    const url = URL.createObjectURL(file);
+    const img = new Image();
+    img.onload = () => {
+      resolve({ width: img.naturalWidth, height: img.naturalHeight });
+      URL.revokeObjectURL(url);
+    };
+    img.onerror = () => {
+      resolve({ width: 800, height: 600 });
+      URL.revokeObjectURL(url);
+    };
+    img.src = url;
+  });
+}
 
 export default function UploadButton({ albumSlug }: { albumSlug: string }) {
   const inputRef = useRef<HTMLInputElement>(null);
@@ -14,26 +31,39 @@ export default function UploadButton({ albumSlug }: { albumSlug: string }) {
   async function handleFiles(files: FileList | null) {
     if (!files || files.length === 0) return;
 
-    const formData = new FormData();
-    for (const file of Array.from(files)) {
-      formData.append("photos", file);
-    }
+    const imageFiles = Array.from(files).filter((f) => f.type.startsWith("image/"));
+    if (imageFiles.length === 0) return;
 
     setStatus("uploading");
-    setMessage(`Uploading ${files.length} photo${files.length !== 1 ? "s" : ""}…`);
+    setMessage(`Uploading ${imageFiles.length} photo${imageFiles.length !== 1 ? "s" : ""}…`);
 
     try {
-      const res = await fetch(`/api/upload/${albumSlug}`, {
-        method: "POST",
-        body: formData,
-      });
+      let uploaded = 0;
 
-      const data = await res.json();
-      if (!res.ok) throw new Error(data?.error || `Server error ${res.status}`);
+      for (const file of imageFiles) {
+        setMessage(`Uploading ${uploaded + 1} of ${imageFiles.length}…`);
 
-      const count = data.added?.length ?? 0;
+        // Upload directly from browser to Vercel Blob (no size limit)
+        const blob = await upload(`gallery/${albumSlug}/${file.name}`, file, {
+          access: "public",
+          handleUploadUrl: `/api/upload/${albumSlug}`,
+        });
+
+        // Get real dimensions from the browser
+        const { width, height } = await getImageDimensions(file);
+
+        // Register the photo in the album metadata
+        await fetch(`/api/gallery/${albumSlug}/photos`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ filename: blob.url, width, height }),
+        });
+
+        uploaded++;
+      }
+
       setStatus("done");
-      setMessage(`${count} photo${count !== 1 ? "s" : ""} added!`);
+      setMessage(`${uploaded} photo${uploaded !== 1 ? "s" : ""} added!`);
       router.refresh();
     } catch (err) {
       setStatus("error");
@@ -61,11 +91,7 @@ export default function UploadButton({ albumSlug }: { albumSlug: string }) {
         {status === "uploading" ? "Uploading…" : "Upload Photos"}
       </button>
       {message && (
-        <p
-          className={`text-sm ${
-            status === "error" ? "text-red-500" : "text-warm-500"
-          }`}
-        >
+        <p className={`text-sm ${status === "error" ? "text-red-500" : "text-warm-500"}`}>
           {message}
         </p>
       )}
