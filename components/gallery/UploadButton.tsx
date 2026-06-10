@@ -38,32 +38,31 @@ export default function UploadButton({ albumSlug }: { albumSlug: string }) {
     setMessage(`Uploading ${imageFiles.length} photo${imageFiles.length !== 1 ? "s" : ""}…`);
 
     try {
-      let uploaded = 0;
+      // Upload all photos to blob in parallel
+      const results = await Promise.all(
+        imageFiles.map(async (file) => {
+          const [blob, dims] = await Promise.all([
+            upload(`gallery/${albumSlug}/${file.name}`, file, {
+              access: "public",
+              handleUploadUrl: `/api/upload/${albumSlug}`,
+            }),
+            getImageDimensions(file),
+          ]);
+          return { filename: blob.url, width: dims.width, height: dims.height };
+        })
+      );
 
-      for (const file of imageFiles) {
-        setMessage(`Uploading ${uploaded + 1} of ${imageFiles.length}…`);
-
-        // Upload directly from browser to Vercel Blob (no size limit)
-        const blob = await upload(`gallery/${albumSlug}/${file.name}`, file, {
-          access: "public",
-          handleUploadUrl: `/api/upload/${albumSlug}`,
-        });
-
-        // Get real dimensions from the browser
-        const { width, height } = await getImageDimensions(file);
-
-        // Register the photo in the album metadata
+      // Register photos sequentially to avoid write conflicts on the album JSON
+      for (const photo of results) {
         await fetch(`/api/gallery/${albumSlug}/photos`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ filename: blob.url, width, height }),
+          body: JSON.stringify(photo),
         });
-
-        uploaded++;
       }
 
       setStatus("done");
-      setMessage(`${uploaded} photo${uploaded !== 1 ? "s" : ""} added!`);
+      setMessage(`${results.length} photo${results.length !== 1 ? "s" : ""} added!`);
       router.refresh();
     } catch (err) {
       setStatus("error");
