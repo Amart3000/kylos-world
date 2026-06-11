@@ -76,16 +76,32 @@ export default function ForestBackground({
       sway: Math.random() * Math.PI * 2,
     }));
 
-    // --- Deer that runs across the bottom ---
-    let deer = { x: -140, active: false, vx: 0 };
-    let deerTimeout: ReturnType<typeof setTimeout>;
-    function scheduleDeer() {
-      deerTimeout = setTimeout(() => {
-        deer = { x: -140, active: true, vx: 2.2 + Math.random() * 1.2 };
-        scheduleDeer();
+    // --- Herd: deer + bear + wolf run across together (staggered) ---
+    type Runner = {
+      kind: "deer" | "bear" | "wolf";
+      x: number;
+      offset: number; // horizontal offset relative to group leader
+      active: boolean;
+      vx: number;
+    };
+    const herd: Runner[] = [
+      { kind: "deer", x: -160, offset: 0, active: false, vx: 0 },
+      { kind: "wolf", x: -160, offset: -70, active: false, vx: 0 },
+      { kind: "bear", x: -160, offset: -150, active: false, vx: 0 },
+    ];
+    let herdTimeout: ReturnType<typeof setTimeout>;
+    function scheduleHerd() {
+      herdTimeout = setTimeout(() => {
+        const vx = 2.2 + Math.random() * 1.2;
+        for (const r of herd) {
+          r.active = true;
+          r.vx = vx;
+          r.x = -160 + r.offset;
+        }
+        scheduleHerd();
       }, 12000 + Math.random() * 18000);
     }
-    scheduleDeer();
+    scheduleHerd();
 
     // --- Click sparkles ---
     type Sparkle = { x: number; y: number; vx: number; vy: number; life: number; size: number; color: string };
@@ -110,6 +126,84 @@ export default function ForestBackground({
       }
     }
     if (interactive) canvas.addEventListener("click", handleClick);
+
+    // --- Species draw helpers (origin = ground contact at the runner's feet) ---
+    function drawLegs(c: CanvasRenderingContext2D, positions: [number, number][], t: number, top: number, len: number) {
+      c.lineCap = "round";
+      for (const [lx, phase] of positions) {
+        c.beginPath();
+        c.moveTo(lx, top);
+        c.lineTo(lx + Math.sin(t + phase) * 6, top + len);
+        c.stroke();
+      }
+    }
+
+    function drawDeer(c: CanvasRenderingContext2D, t: number) {
+      c.fillStyle = "rgba(78, 50, 28, 0.88)";
+      c.strokeStyle = "rgba(78, 50, 28, 0.88)";
+      c.beginPath(); c.ellipse(0, -14, 22, 10, 0, 0, Math.PI * 2); c.fill();        // body
+      c.beginPath(); c.ellipse(22, -23, 9, 7, 0.3, 0, Math.PI * 2); c.fill();       // head
+      c.beginPath(); c.ellipse(29, -22, 4.5, 3.5, 0.2, 0, Math.PI * 2); c.fill();   // snout
+      c.lineWidth = 6;
+      c.beginPath(); c.moveTo(13, -18); c.lineTo(17, -18); c.stroke();              // neck
+      c.lineWidth = 3.5;
+      drawLegs(c, [[14, 1], [18, -1], [-7, 1], [-12, -1]], t, -4, 16);
+      // antlers
+      c.lineWidth = 1.8;
+      c.beginPath();
+      c.moveTo(18, -27); c.lineTo(15, -40); c.lineTo(10, -45);
+      c.moveTo(15, -40); c.lineTo(19, -46);
+      c.moveTo(20, -27); c.lineTo(23, -38); c.lineTo(28, -42);
+      c.moveTo(23, -38); c.lineTo(19, -43);
+      c.stroke();
+      // tail
+      c.lineWidth = 3;
+      c.beginPath(); c.moveTo(-22, -16); c.lineTo(-27, -19); c.stroke();
+    }
+
+    function drawWolf(c: CanvasRenderingContext2D, t: number) {
+      c.fillStyle = "rgba(70, 74, 82, 0.85)";
+      c.strokeStyle = "rgba(70, 74, 82, 0.85)";
+      // body (lower, longer than deer)
+      c.beginPath(); c.ellipse(0, -10, 21, 7.5, 0, 0, Math.PI * 2); c.fill();
+      // head — angular, lower than deer
+      c.beginPath(); c.ellipse(20, -14, 8, 5.5, 0.15, 0, Math.PI * 2); c.fill();
+      // muzzle
+      c.beginPath(); c.ellipse(27, -13, 4, 2.5, 0.1, 0, Math.PI * 2); c.fill();
+      // ears (triangular, perked)
+      c.beginPath();
+      c.moveTo(17, -19); c.lineTo(15, -24); c.lineTo(20, -20); c.closePath(); c.fill();
+      c.beginPath();
+      c.moveTo(22, -19); c.lineTo(21, -24); c.lineTo(25, -20); c.closePath(); c.fill();
+      // legs (shorter, thinner stride)
+      c.lineWidth = 2.8;
+      drawLegs(c, [[13, 1], [16, -1], [-7, 1], [-11, -1]], t, -3, 13);
+      // bushy tail
+      c.lineWidth = 5;
+      c.beginPath();
+      c.moveTo(-20, -12);
+      c.quadraticCurveTo(-28, -16, -30, -10);
+      c.stroke();
+    }
+
+    function drawBear(c: CanvasRenderingContext2D, t: number) {
+      c.fillStyle = "rgba(58, 38, 22, 0.92)";
+      c.strokeStyle = "rgba(58, 38, 22, 0.92)";
+      // big chunky body
+      c.beginPath(); c.ellipse(0, -16, 28, 13, 0, 0, Math.PI * 2); c.fill();
+      // shoulder hump
+      c.beginPath(); c.ellipse(-6, -25, 11, 7, 0, 0, Math.PI * 2); c.fill();
+      // head (round)
+      c.beginPath(); c.ellipse(26, -20, 10, 8.5, 0, 0, Math.PI * 2); c.fill();
+      // snout
+      c.beginPath(); c.ellipse(33, -18, 5, 4, 0, 0, Math.PI * 2); c.fill();
+      // round ears
+      c.beginPath(); c.arc(21, -28, 3, 0, Math.PI * 2); c.fill();
+      c.beginPath(); c.arc(30, -28, 3, 0, Math.PI * 2); c.fill();
+      // thick stubby legs
+      c.lineWidth = 5;
+      drawLegs(c, [[16, 1], [21, -1], [-10, 1], [-16, -1]], t, -5, 14);
+    }
 
     let animId: number;
 
@@ -175,58 +269,19 @@ export default function ForestBackground({
       }
       ctx!.globalAlpha = 1;
 
-      // Deer
-      if (deer.active) {
-        deer.x += deer.vx;
-        const dY = H * 0.88;
-        const t = Date.now() * 0.012;
+      // Herd (deer, wolf, bear) — run at H*0.82 so footer doesn't clip them.
+      const groundY = H * 0.82;
+      const tHerd = Date.now() * 0.012;
+      for (const r of herd) {
+        if (!r.active) continue;
+        r.x += r.vx;
         ctx!.save();
-        ctx!.translate(deer.x, dY);
-        ctx!.fillStyle = "rgba(20, 52, 26, 0.78)";
-        ctx!.strokeStyle = "rgba(20, 52, 26, 0.78)";
-        // body
-        ctx!.beginPath();
-        ctx!.ellipse(0, -14, 22, 10, 0, 0, Math.PI * 2);
-        ctx!.fill();
-        // head
-        ctx!.beginPath();
-        ctx!.ellipse(22, -23, 9, 7, 0.3, 0, Math.PI * 2);
-        ctx!.fill();
-        // snout
-        ctx!.beginPath();
-        ctx!.ellipse(29, -22, 4.5, 3.5, 0.2, 0, Math.PI * 2);
-        ctx!.fill();
-        // neck
-        ctx!.lineWidth = 6;
-        ctx!.lineCap = "round";
-        ctx!.beginPath();
-        ctx!.moveTo(13, -18);
-        ctx!.lineTo(17, -18);
-        ctx!.stroke();
-        // legs
-        ctx!.lineWidth = 3.5;
-        [[14, 1], [18, -1], [-7, 1], [-12, -1]].forEach(([lx, phase]) => {
-          ctx!.beginPath();
-          ctx!.moveTo(lx, -4);
-          ctx!.lineTo(lx + Math.sin(t + phase) * 6, 12);
-          ctx!.stroke();
-        });
-        // antlers
-        ctx!.lineWidth = 1.8;
-        ctx!.beginPath();
-        ctx!.moveTo(18, -27);
-        ctx!.lineTo(15, -40);
-        ctx!.lineTo(10, -45);
-        ctx!.moveTo(15, -40);
-        ctx!.lineTo(19, -46);
-        ctx!.moveTo(20, -27);
-        ctx!.lineTo(23, -38);
-        ctx!.lineTo(28, -42);
-        ctx!.moveTo(23, -38);
-        ctx!.lineTo(19, -43);
-        ctx!.stroke();
+        ctx!.translate(r.x, groundY);
+        if (r.kind === "deer") drawDeer(ctx!, tHerd);
+        else if (r.kind === "wolf") drawWolf(ctx!, tHerd);
+        else drawBear(ctx!, tHerd);
         ctx!.restore();
-        if (deer.x > W + 160) deer.active = false;
+        if (r.x > W + 200) r.active = false;
       }
 
       // Sparkles
@@ -256,7 +311,7 @@ export default function ForestBackground({
 
     return () => {
       cancelAnimationFrame(animId);
-      clearTimeout(deerTimeout);
+      clearTimeout(herdTimeout);
       if (interactive) canvas!.removeEventListener("click", handleClick);
       ro.disconnect();
     };
