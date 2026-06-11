@@ -1,4 +1,4 @@
-import { put, list } from "@vercel/blob";
+import { put, head, BlobNotFoundError } from "@vercel/blob";
 import fs from "fs";
 import path from "path";
 
@@ -10,20 +10,24 @@ export async function readJson<T>(
 ): Promise<T | null> {
   if (hasBlob) {
     try {
-      const { blobs } = await list({ prefix: blobPath });
-      const match = blobs.find((b) => b.pathname === blobPath);
-      if (match) {
-        // Append timestamp to bypass any CDN layer that ignores Cache-Control
-        const bustUrl = `${match.url}?_t=${Date.now()}`;
-        const res = await fetch(bustUrl, {
-          cache: "no-store",
-          headers: { "Cache-Control": "no-cache, no-store" },
-        });
-        if (!res.ok) throw new Error(`Blob fetch ${res.status}`);
-        return (await res.json()) as T;
-      }
+      // head() is strongly consistent for a known pathname (list() is not).
+      // It also returns the current etag, which we use to bust any CDN cache.
+      const meta = await head(blobPath);
+      const bustUrl = `${meta.url}?_t=${Date.now()}&_e=${encodeURIComponent(meta.etag)}`;
+      const res = await fetch(bustUrl, {
+        cache: "no-store",
+        headers: {
+          "Cache-Control": "no-cache, no-store, must-revalidate",
+          Pragma: "no-cache",
+        },
+      });
+      if (!res.ok) throw new Error(`Blob fetch ${res.status}`);
+      return (await res.json()) as T;
     } catch (err) {
-      console.error("[blob-store] readJson failed:", blobPath, err);
+      // Missing blob is expected on first run — fall through to file fallback.
+      if (!(err instanceof BlobNotFoundError)) {
+        console.error("[blob-store] readJson failed:", blobPath, err);
+      }
     }
   }
 

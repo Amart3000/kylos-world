@@ -60,9 +60,13 @@ export async function deleteAlbum(slug: string): Promise<void> {
 }
 
 export async function deletePhoto(albumSlug: string, filename: string): Promise<void> {
-  const album = await getAlbumBySlug(albumSlug);
-  if (!album) throw new Error("Album not found");
+  // Read the full albums list once and write it back once — avoids a second
+  // read-modify-write inside saveAlbum that can race with CDN propagation.
+  const albums = await getAllAlbums();
+  const idx = albums.findIndex((a) => a.slug === albumSlug);
+  if (idx === -1) throw new Error("Album not found");
 
+  const album = albums[idx];
   album.photos = album.photos.filter((p) => p.filename !== filename);
   if (album.coverPhoto === filename) {
     album.coverPhoto = album.photos[0]?.filename ?? "";
@@ -72,5 +76,11 @@ export async function deletePhoto(albumSlug: string, filename: string): Promise<
     await del(filename);
   }
 
-  await saveAlbum(album);
+  if (hasBlob) {
+    await writeJson(BLOB_PATH, undefined, albums);
+  } else {
+    const filePath = path.join(GALLERY_DIR, album.slug, "album.json");
+    fs.mkdirSync(path.dirname(filePath), { recursive: true });
+    fs.writeFileSync(filePath, JSON.stringify(album, null, 2));
+  }
 }

@@ -52,14 +52,12 @@ export default function UploadButton({ albumSlug }: { albumSlug: string }) {
         })
       );
 
-      // Register photos sequentially to avoid write conflicts on the album JSON
-      for (const photo of results) {
-        await fetch(`/api/gallery/${albumSlug}/photos`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(photo),
-        });
-      }
+      // Register all photos in one request to avoid read-modify-write races
+      await fetch(`/api/gallery/${albumSlug}/photos`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(results),
+      });
 
       setStatus("done");
       setMessage(`${results.length} photo${results.length !== 1 ? "s" : ""} added!`);

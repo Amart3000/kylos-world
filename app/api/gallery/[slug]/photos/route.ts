@@ -7,9 +7,12 @@ type Params = { params: Promise<{ slug: string }> };
 export async function POST(req: Request, { params }: Params) {
   try {
     const { slug } = await params;
-    const { filename, width, height } = await req.json();
+    const body = await req.json();
 
-    if (!filename) {
+    // Accept either a single photo object or an array
+    const incoming: Photo[] = Array.isArray(body) ? body : [body];
+
+    if (incoming.some((p) => !p.filename)) {
       return NextResponse.json({ error: "filename is required" }, { status: 400 });
     }
 
@@ -19,12 +22,15 @@ export async function POST(req: Request, { params }: Params) {
     }
 
     const existing = new Set(album.photos.map((p: Photo) => p.filename));
-    if (!existing.has(filename)) {
-      album.photos.push({ filename, width: width || 800, height: height || 600 });
-      if (!album.coverPhoto) album.coverPhoto = filename;
-      await saveAlbum(album);
+    for (const { filename, width, height } of incoming) {
+      if (!existing.has(filename)) {
+        album.photos.push({ filename, width: width || 800, height: height || 600 });
+        existing.add(filename);
+        if (!album.coverPhoto) album.coverPhoto = filename;
+      }
     }
 
+    await saveAlbum(album);
     return NextResponse.json({ ok: true });
   } catch (err) {
     console.error("[api/gallery/[slug]/photos] POST failed:", err);
