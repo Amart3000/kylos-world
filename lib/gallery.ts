@@ -1,11 +1,11 @@
 import fs from "fs";
 import path from "path";
 import type { GalleryAlbum } from "./types";
-import { hasBlob, readJson, writeJson } from "./blob-store";
+import { hasBlob, readJsonVersioned, writeJsonVersioned } from "./blob-store";
 import { del } from "@vercel/blob";
 
 const GALLERY_DIR = path.join(process.cwd(), "content", "gallery");
-const BLOB_PATH = "data/gallery/albums.json";
+const BLOB_WRITE_PATH = "data/gallery/albums.json";
 
 function loadAlbumsFromFiles(): GalleryAlbum[] {
   if (!fs.existsSync(GALLERY_DIR)) return [];
@@ -22,7 +22,11 @@ function loadAlbumsFromFiles(): GalleryAlbum[] {
 }
 
 export async function getAllAlbums(): Promise<GalleryAlbum[]> {
-  const albums = await readJson<GalleryAlbum[]>(BLOB_PATH);
+  let albums: GalleryAlbum[] | null = null;
+  if (hasBlob) {
+    const result = await readJsonVersioned<GalleryAlbum[]>(BLOB_WRITE_PATH);
+    if (result) albums = result.data;
+  }
   const list = albums ?? loadAlbumsFromFiles();
   return list.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
 }
@@ -39,7 +43,7 @@ export async function saveAlbum(album: GalleryAlbum): Promise<void> {
   else albums[idx] = album;
 
   if (hasBlob) {
-    await writeJson(BLOB_PATH, undefined, albums);
+    await writeJsonVersioned(BLOB_WRITE_PATH, albums);
   } else {
     const filePath = path.join(GALLERY_DIR, album.slug, "album.json");
     fs.mkdirSync(path.dirname(filePath), { recursive: true });
@@ -52,7 +56,7 @@ export async function deleteAlbum(slug: string): Promise<void> {
   const filtered = albums.filter((a) => a.slug !== slug);
 
   if (hasBlob) {
-    await writeJson(BLOB_PATH, undefined, filtered);
+    await writeJsonVersioned(BLOB_WRITE_PATH, filtered);
   } else {
     const albumDir = path.join(GALLERY_DIR, slug);
     if (fs.existsSync(albumDir)) fs.rmSync(albumDir, { recursive: true });
@@ -77,7 +81,7 @@ export async function deletePhoto(albumSlug: string, filename: string): Promise<
   }
 
   if (hasBlob) {
-    await writeJson(BLOB_PATH, undefined, albums);
+    await writeJsonVersioned(BLOB_WRITE_PATH, albums);
   } else {
     const filePath = path.join(GALLERY_DIR, album.slug, "album.json");
     fs.mkdirSync(path.dirname(filePath), { recursive: true });
