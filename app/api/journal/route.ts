@@ -37,8 +37,8 @@ export async function POST(request: Request) {
       content: content.trim(),
     };
 
-    await addJournalEntry(entry);
-    return Response.json({ slug });
+    const savedSlug = await addJournalEntry(entry);
+    return Response.json({ slug: savedSlug });
   } catch (err) {
     console.error("[journal POST]", err);
     return Response.json({ error: String(err) }, { status: 500 });

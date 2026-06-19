@@ -2,10 +2,13 @@ import fs from "fs";
 import path from "path";
 import matter from "gray-matter";
 import type { JournalMeta, JournalEntry } from "./types";
-import { hasBlob, readJson, writeJson } from "./blob-store";
+import { hasBlob, readJsonVersioned, writeJsonVersioned } from "./blob-store";
 
 const JOURNAL_DIR = path.join(process.cwd(), "content", "journal");
-const BLOB_PATH = "data/journal/entries.json";
+// Versioned blob layout. Each save uses addRandomSuffix:true, so Vercel writes
+// to `data/journal/entries-<random>.json`. Older versions hang around as
+// recovery snapshots.
+const BLOB_WRITE_PATH = "data/journal/entries.json";
 
 function slugFromFilename(filename: string): string {
   return filename.replace(/^\d{4}-\d{2}-\d{2}-/, "").replace(/\.mdx$/, "");
@@ -32,8 +35,16 @@ function loadEntriesFromFiles(): JournalEntry[] {
 }
 
 async function getAllEntries(): Promise<JournalEntry[]> {
-  const entries = await readJson<JournalEntry[]>(BLOB_PATH);
-  return entries ?? loadEntriesFromFiles();
+  const result = await readJsonVersioned<JournalEntry[]>(BLOB_WRITE_PATH);
+  if (result) return result.data;
+  return loadEntriesFromFiles();
+}
+
+function ensureUniqueSlug(slug: string, taken: Set<string>): string {
+  if (!taken.has(slug)) return slug;
+  let n = 2;
+  while (taken.has(`${slug}-${n}`)) n++;
+  return `${slug}-${n}`;
 }
 
 export async function getAllJournalEntries(): Promise<JournalMeta[]> {
@@ -66,7 +77,7 @@ export async function updateJournalEntry(
       excerpt: updates.excerpt?.trim() || undefined,
       ...(updates.content?.trim() ? { content: updates.content.trim() } : {}),
     };
-    await writeJson(BLOB_PATH, undefined, entries);
+    await writeJsonVersioned(BLOB_WRITE_PATH, entries);
   } else {
     if (!fs.existsSync(JOURNAL_DIR)) throw new Error("Entry not found");
     const files = fs.readdirSync(JOURNAL_DIR).filter((f) => f.endsWith(".mdx"));
@@ -96,7 +107,7 @@ export async function deleteJournalEntry(slug: string): Promise<void> {
     const entries = await getAllEntries();
     const filtered = entries.filter((e) => e.slug !== slug);
     if (filtered.length === entries.length) throw new Error("Entry not found");
-    await writeJson(BLOB_PATH, undefined, filtered);
+    await writeJsonVersioned(BLOB_WRITE_PATH, filtered);
   } else {
     if (!fs.existsSync(JOURNAL_DIR)) throw new Error("Entry not found");
     const files = fs.readdirSync(JOURNAL_DIR).filter((f) => f.endsWith(".mdx"));
@@ -106,25 +117,27 @@ export async function deleteJournalEntry(slug: string): Promise<void> {
   }
 }
 
-export async function addJournalEntry(entry: JournalEntry): Promise<void> {
+export async function addJournalEntry(entry: JournalEntry): Promise<string> {
   if (hasBlob) {
     const entries = await getAllEntries();
-    entries.push(entry);
-    await writeJson(BLOB_PATH, undefined, entries);
-  } else {
-    const filename = `${entry.date}-${entry.slug}.mdx`;
-    const filePath = path.join(JOURNAL_DIR, filename);
-    const frontmatter = [
-      "---",
-      `title: ${JSON.stringify(entry.title)}`,
-      `date: ${JSON.stringify(entry.date)}`,
-      `author: ${JSON.stringify(entry.author)}`,
-      entry.excerpt ? `excerpt: ${JSON.stringify(entry.excerpt)}` : null,
-      "---",
-    ]
-      .filter(Boolean)
-      .join("\n");
-    fs.mkdirSync(JOURNAL_DIR, { recursive: true });
-    fs.writeFileSync(filePath, `${frontmatter}\n\n${entry.content.trim()}\n`);
+    const uniqueSlug = ensureUniqueSlug(entry.slug, new Set(entries.map((e) => e.slug)));
+    entries.push({ ...entry, slug: uniqueSlug });
+    await writeJsonVersioned(BLOB_WRITE_PATH, entries);
+    return uniqueSlug;
   }
+  const filename = `${entry.date}-${entry.slug}.mdx`;
+  const filePath = path.join(JOURNAL_DIR, filename);
+  const frontmatter = [
+    "---",
+    `title: ${JSON.stringify(entry.title)}`,
+    `date: ${JSON.stringify(entry.date)}`,
+    `author: ${JSON.stringify(entry.author)}`,
+    entry.excerpt ? `excerpt: ${JSON.stringify(entry.excerpt)}` : null,
+    "---",
+  ]
+    .filter(Boolean)
+    .join("\n");
+  fs.mkdirSync(JOURNAL_DIR, { recursive: true });
+  fs.writeFileSync(filePath, `${frontmatter}\n\n${entry.content.trim()}\n`);
+  return entry.slug;
 }
