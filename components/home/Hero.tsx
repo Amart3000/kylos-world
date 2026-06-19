@@ -33,7 +33,10 @@ export default function Hero() {
             {siteConfig.babyName}
           </h1>
           <p className="mt-3 text-warm-700 text-lg tracking-wide">
-            Born {format(siteConfig.birthdate, "MMMM d, yyyy")}
+            Born {format(siteConfig.birthdate, "MMMM d, yyyy 'at' h:mm a")}
+          </p>
+          <p className="mt-1 text-warm-600 text-sm tracking-wide">
+            {siteConfig.birthWeight} &middot; {siteConfig.birthLength}
           </p>
         </div>
 
